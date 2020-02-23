@@ -72,15 +72,12 @@ router.post('/login', (req, res) => {
         // Sign Token
         jwt.sign(
           payload,
-          'secret',
+          process.env.TOKEN_SECRET,
           {
             expiresIn: 31556926
           },
           (err, token) => {
-            res.json({
-              success: true,
-              token: "Bearer " + token
-            });
+            res.header('auth-token', token).send(token);
           }
         );
       } else {

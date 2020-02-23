@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 
 const users = require('./routes/users');
+const messages = require('./routes/messages');
+
+const verify = require('./routes/verifyToken');
 
 require('dotenv/config');
 
@@ -14,6 +17,10 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Hello There');
+});
+
+app.get('/posts', verify, (req, res) => {
+  res.send(req.user);
 });
 
 // Connect to DB
@@ -31,5 +38,6 @@ require("./config/passport")(passport);
 
 // Routes
 app.use("/api/users", users);
+app.use('/api/messages', messages);
 
-app.listen(8080);
+app.listen(8091);
