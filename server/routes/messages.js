@@ -4,6 +4,7 @@ const verify = require('../routes/verifyToken');
 
 // Load Message model
 const Message = require('../models/Message');
+const Chat = require('../models/Chat');
 
 // @route POST /api/messages/post
 router.post('/post', verify, (req, res) => {
@@ -14,18 +15,23 @@ router.post('/post', verify, (req, res) => {
     content: req.body.content
   });
 
-  newMessage.save()
-    .then(message => {
-      res.status(201).json(message);
-    })
-    .catch(e => console.log(e));
+  Chat.findOneAndUpdate(
+    { _id: req.body.chatId },
+    { $push: { messages: newMessage } },
+    function (error, success) {
+      if (error) {
+        res.status(400).json(error);
+      } else {
+        res.status(201).json(success);
+      }
+    });
 });
 
 // @route GET /api/messages/
 router.get('/', verify, (req, res) => {
   Message.find({}, (err, result) => {
-    if(err) res.status(400).json(err);
-    
+    if (err) res.status(400).json(err);
+
     res.status(200).json(result);
   })
 });

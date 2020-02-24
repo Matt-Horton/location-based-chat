@@ -1,33 +1,42 @@
-import React, {useState, useContext} from 'react';
-import { View, Text, StyleSheet} from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
-import {Context as UserInfoContext} from '../context/UserInfoContext';
-import {sendMessage} from '../utils/messageUtils';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { Context as UserInfoContext } from '../context/UserInfoContext';
+import { getListOfChats } from '../utils/chatUtils';
+import ChatListItem from '../components/ChatListItem';
+import socketIOClient from "socket.io-client";
 
-const HomeScreen = () => {
-  const [message, setMessage] = useState('');
-  const {state} = useContext(UserInfoContext);
+const HomeScreen = ({ navigation }) => {
+  const [chats, setChats] = useState([]);
+  const { state } = useContext(UserInfoContext);
 
-  const submitMessage = () => {
-    
-    const newMessage = {
-      chatId: '1234',
-      content: message,
-    };
-    
+  useEffect(() => {
+    (async function getChats() {
+      getListOfChats(state.authToken, setChats);
+    })();
 
-    sendMessage(newMessage, state.authToken);
-  }
+    const socket = socketIOClient(endpoint);
+    socket.on("chat message", data => {
+      console.log(data);
+    });
+  }, []);
+
+  // Navigate to chat screen
+  const navigateToChat = (id) => {
+    navigation.navigate('Chat', {
+      chatId: id
+    });
+  };
 
   return (
     <View style={styles.container}>
-      <FormInput
-        placeholder="Write a message.."
-        updateValue={setMessage}
-        value={message}
+      <FlatList
+        style={styles.chatList}
+        data={chats}
+        renderItem={({ item }) => 
+          <ChatListItem chat={item} navigateToChat={navigateToChat} />
+        }
+        keyExtractor={chat => chat._id}
       />
-      <FormButton text="Send" submitForm={submitMessage} />
     </View>
   )
 };
@@ -40,6 +49,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
+  chatList: {
+    alignSelf: 'stretch',
+  }
 });
 
 export default HomeScreen;

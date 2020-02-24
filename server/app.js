@@ -1,9 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const http = require("http");
+const socketIo = require("socket.io");
 
 const users = require('./routes/users');
 const messages = require('./routes/messages');
+const chats = require('./routes/chats');
 
 const verify = require('./routes/verifyToken');
 
@@ -39,5 +42,18 @@ require("./config/passport")(passport);
 // Routes
 app.use("/api/users", users);
 app.use('/api/messages', messages);
+app.use('/api/chats', chats);
 
-app.listen(8091);
+
+const server = http.createServer(app);
+
+const io = socketIo(server); // < Interesting!
+
+io.on("connection", socket => {
+  console.log("New client connected");
+  socket.on("disconnect", () => console.log("Client disconnected"));
+});
+
+const port = 8091;
+
+server.listen(port, () => console.log(`Listening on port ${port}`));
