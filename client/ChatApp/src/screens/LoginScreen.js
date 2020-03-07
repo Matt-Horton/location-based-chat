@@ -25,6 +25,7 @@ const LoginScreen = ({navigation}) => {
         if (userInfo !== null) {
           // Set context to projects
           initUserInfo(JSON.parse(userInfo));
+          navigation.navigate('Home');
         } else {
           console.log("User Info doesn't exist");
           // Create projects in DB

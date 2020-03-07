@@ -1,4 +1,10 @@
 {
   "name": "ChatApp",
-  "displayName": "ChatApp"
+  "displayName": "ChatApp",
+  "android": {
+    "package": "com.chatapp",
+    "config": {
+       "googleMaps": { "apiKey": "AIzaSyB-aOvJFCFhAegWnyNoGfZnhAvcAWoOSQs" }   
+    }
+ }
 }
