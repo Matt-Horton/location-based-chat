@@ -28,6 +28,17 @@ router.get('/', verify, (req, res) => {
     if(err) res.status(400).json(err);
     
     res.status(200).json(result);
+  });
+});
+
+// @route GET /api/chats/id
+router.get('/:chatId', verify, (req, res) => {
+  const id = req.params.chatId;
+  console.log(id);
+  Chat.findOne({_id: id}, (err, result) => {
+    if(err) res.status(400).json(err);
+    
+    res.status(200).json(result);
   })
 });
 

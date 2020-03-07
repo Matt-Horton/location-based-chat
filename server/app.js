@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const http = require("http");
 const socketIo = require("socket.io");
+const uuid = require('uuid');
 
 const users = require('./routes/users');
 const messages = require('./routes/messages');
 const chats = require('./routes/chats');
+
+const Chat = require('./models/Chat');
+const Message = require('./models/Message');
 
 const verify = require('./routes/verifyToken');
 
@@ -44,16 +48,35 @@ app.use("/api/users", users);
 app.use('/api/messages', messages);
 app.use('/api/chats', chats);
 
+const port = 8091;
 
 const server = http.createServer(app);
 
-const io = socketIo(server); // < Interesting!
+const io = socketIo(server);
+io.on('connection', socket => {
+  console.log('client connected on websocket');
 
-io.on("connection", socket => {
-  console.log("New client connected");
-  socket.on("disconnect", () => console.log("Client disconnected"));
+  socket.on("chat message", msg => {
+    console.log(msg);
+    const newMessage = new Message({
+      _id: uuid.v4(),
+      userId: msg.userId,
+      chatId: msg.chatId,
+      content: msg.content
+    });
+
+    Chat.findOneAndUpdate(
+      { _id: msg.chatId },
+      { $push: { messages: newMessage } },
+      function (error, success) {
+        if (error) {
+          res.status(400).json(error);
+        } else {
+          console.log('Saved message', success);
+          io.emit("chat message", newMessage);
+        }
+      });
+  });
 });
-
-const port = 8091;
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
