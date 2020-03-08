@@ -5,7 +5,7 @@ const verify = require('../routes/verifyToken');
 const Chat = require('../models/Chat');
 
 // @route POST /api/chats/create
-router.post('/create', verify, (req,res) => {
+router.post('/', verify, (req,res) => {
 
   const newChat = new Chat({
     name: req.body.name,

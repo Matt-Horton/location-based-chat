@@ -22,7 +22,8 @@ const getChat = (chatId, authToken, setChat) => {
     'auth-token': authToken
   }
 
-  axios.get(`http://10.0.2.2:8091/api/chats/${chatId}`, { headers: headers })
+  axios.get(`http://10.0.2.2:8091/api/chats/${chatId}`,
+   { headers: headers })
     .then((result) => {
       console.log('Chat: ', result);
       setChat(result.data);
@@ -31,9 +32,28 @@ const getChat = (chatId, authToken, setChat) => {
       console.log(e)
       setChats({});
     });
-}
+};
+
+const createNewChat = (newChat, authToken) => {
+  const headers = {
+    'auth-token': authToken
+  }
+
+  axios.post('http://10.0.2.2:8091/api/chats', 
+    {
+      name: newChat.name
+    },
+    { headers: headers})
+      .then((result) => {
+        console.log("Create chat: ", result);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+};
 
 export {
   getListOfChats,
-  getChat
+  getChat,
+  createNewChat,
 };

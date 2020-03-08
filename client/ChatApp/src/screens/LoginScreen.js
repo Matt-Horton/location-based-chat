@@ -74,7 +74,6 @@ const LoginScreen = ({navigation}) => {
           Sign Up
         </Text>
       </Text>
-      <Text>{state.authToken}</Text>
     </View>
   )
 }
