@@ -5,6 +5,7 @@ import FormInput from '../components/FormInput';
 import { Context as UserInfoContext } from '../context/UserInfoContext';
 import { updateUserProfile } from '../utils/auth';
 import ImagePicker from 'react-native-image-picker';
+import ImageResizer from 'react-native-image-resizer';
 
 const UpdateProfileScreen = () => {
   const [firstName, setFirstName] = useState('');
@@ -17,7 +18,8 @@ const UpdateProfileScreen = () => {
     const userDetails = {
       firstName: firstName,
       lastName: lastName,
-      bio: bio
+      bio: bio,
+      photo: photo
     };
 
     updateUserProfile(state.userId, userDetails, state.authToken);
@@ -26,18 +28,29 @@ const UpdateProfileScreen = () => {
   const selectProfilePicture = () => {
 
     ImagePicker.showImagePicker(response => {
-      console.log(response.path);
+      console.log("Response: ", response);
       if (response.uri) {
-
-        let source = { uri: response.uri };
-        console.log(response);
-        setPhoto(source);
+        ImageResizer.createResizedImage(
+          response.uri,
+          300,
+          300,
+          'JPEG',
+          50,
+          0,
+          "/storage/emulated/0/Pictures/")
+          .then((response) => {
+            console.log('Resize response: ', response);
+            setPhoto(response);
+          }).catch((err) => {
+            console.log(err);
+          });
+        setPhoto(response);
       }
-    })
+    });
   };
 
   return (
-    <View style={styles.container} >
+    <View style={styles.container}>
       <Image
         source={{ uri: photo.uri }}
         style={{ width: 100, height: 100, borderColor: '#000', borderWidth: 1 }}

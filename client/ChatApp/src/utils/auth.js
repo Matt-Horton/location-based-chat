@@ -41,14 +41,21 @@ const updateUserProfile = (userId, userDetails, authToken) => {
     'auth-token': authToken
   };
 
-  axios.put(`http://10.0.2.2:8091/api/users/${userId}`, 
-    userDetails, {headers: headers})
-      .then(res => {
-        console.log(res);
-      })
-      .catch(e => {
-        console.log(e);
-      });
+  const data = new FormData();
+  // data.append('file', {
+  //   name: userDetails.photo.filename,
+  //   uri: Platform.OS === 'android' ? photo.uri : userDetails.photo.uri.replace('file://', ''),
+  // });
+  data.append('file', userDetails.photo);
+
+  axios.put(`http://10.0.2.2:8091/api/users/${userId}`,
+    data)
+    .then(res => {
+      console.log(res);
+    })
+    .catch(e => {
+      console.log(e);
+    });
 }
 
 export {
