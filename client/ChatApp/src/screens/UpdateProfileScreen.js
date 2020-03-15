@@ -3,7 +3,7 @@ import { View, StyleSheet, Image } from 'react-native';
 import FormButton from '../components/FormButton';
 import FormInput from '../components/FormInput';
 import { Context as UserInfoContext } from '../context/UserInfoContext';
-import { updateUserProfile } from '../utils/auth';
+import { updateUserProfile, getUserAvatar } from '../utils/auth';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 
@@ -11,21 +11,29 @@ const UpdateProfileScreen = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [bio, setBio] = useState('');
-  const [photo, setPhoto] = useState('');
+  const [avatar, setAvatar] = useState('');
+  const [profile, setProfile] = useState('');
   const { state } = useContext(UserInfoContext);
 
   const submitUpdateProfile = () => {
+
     const userDetails = {
       firstName: firstName,
       lastName: lastName,
       bio: bio,
-      photo: photo
+      photo: avatar
     };
 
-    updateUserProfile(state.userId, userDetails, state.authToken);
+    updateUserProfile(state.userId, userDetails, state.authToken, displayUserProfile);
   };
 
+  const displayUserProfile = async () => {
+    const base64 = await getUserAvatar(state.userId, state.authToken, setProfile);
+    console.log("Base 64 returned: ", base64);
+  }
+
   const selectProfilePicture = () => {
+    console.log(state.userId);
 
     ImagePicker.showImagePicker(response => {
       console.log("Response: ", response);
@@ -40,11 +48,10 @@ const UpdateProfileScreen = () => {
           "/storage/emulated/0/Pictures/")
           .then((response) => {
             console.log('Resize response: ', response);
-            setPhoto(response);
+            setAvatar(response);
           }).catch((err) => {
             console.log(err);
           });
-        setPhoto(response);
       }
     });
   };
@@ -52,7 +59,7 @@ const UpdateProfileScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: photo.uri }}
+        source={{ uri: avatar.uri }}
         style={{ width: 100, height: 100, borderColor: '#000', borderWidth: 1 }}
       />
       <FormButton
@@ -77,6 +84,10 @@ const UpdateProfileScreen = () => {
       <FormButton
         text="Submit"
         submitForm={submitUpdateProfile}
+      />
+      <Image
+        source={{uri: `data:image/jpeg;base64,${profile}`}} 
+        style={{ width: 100, height: 100, borderColor: '#000', borderWidth: 1 }}
       />
     </View>
   )

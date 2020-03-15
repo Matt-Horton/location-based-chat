@@ -36,30 +36,54 @@ const registerUser = (userDetails, initUserInfo, navigateToUpdateProfile) => {
     });
 };
 
-const updateUserProfile = (userId, userDetails, authToken) => {
-  const headers = {
-    'auth-token': authToken
-  };
+const updateUserProfile = (userId, userDetails, authToken, displayUserAvatar) => {
 
-  const data = new FormData();
-  // data.append('file', {
-  //   name: userDetails.photo.filename,
-  //   uri: Platform.OS === 'android' ? photo.uri : userDetails.photo.uri.replace('file://', ''),
-  // });
-  data.append('file', userDetails.photo);
+  let data = new FormData();
+  data.append('firstName', userDetails.firstName);
+  data.append('lastName', userDetails.lastName);
+  data.append('bio', userDetails.bio);
+
+  data.append('avatar', {
+    uri: userDetails.photo.uri,
+    type: 'image/' + userDetails.photo.type,
+    name: userDetails.photo.name
+  });
 
   axios.put(`http://10.0.2.2:8091/api/users/${userId}`,
     data)
     .then(res => {
-      console.log(res);
+      displayUserAvatar();
     })
     .catch(e => {
       console.log(e);
     });
 }
 
+const getUserAvatar = (userId, authToken, setProfile) => {
+  const headers = {
+    'auth-token': authToken
+  }
+
+  axios.get(`http://10.0.2.2:8091/api/users/profile/${userId}`, { headers: headers })
+    .then(res => {
+      setProfile(arrayBufferToBase64(res.data.data));
+    })
+    .catch(e => {
+      console.log(e);
+    });
+}
+
+const arrayBufferToBase64 = (buffer) => {
+  var binary = '';
+  var bytes = [].slice.call(new Uint8Array(buffer));
+  bytes.forEach((b) => binary += String.fromCharCode(b));
+  console.log(window.btoa(binary))
+  return window.btoa(binary);
+};
+
 export {
   loginUser,
   registerUser,
   updateUserProfile,
+  getUserAvatar,
 };

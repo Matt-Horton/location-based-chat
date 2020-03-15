@@ -3,12 +3,16 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const verify = require('../routes/verifyToken');
+const fs = require('fs');
+
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
 
 // Load input validation
 const validateRegisterInput = require("../validation/register");
 const validateLoginInput = require("../validation/login");
 
-// Load User model
+// Load models
 const User = require("../models/User");
 
 // @route POST api/users/register
@@ -58,19 +62,32 @@ router.post('/register', (req, res) => {
   });
 });
 
-// @route PUT api/users/userId
-router.put('/:userId', verify, (req, res) => {
+// @route get api/users/profile/userId
+router.get('/profile/:userId', verify, (req, res) => {
 
   const userId = req.params.userId;
 
-  console.log(req);
+  User.findOne({_id: userId}, (err, result) => {
+    if(err) res.status(400).json(err);
+    
+    res.status(200).json(result.image);
+  })
+});
+
+// @route PUT api/users/userId
+router.put('/:userId', upload.single('avatar'), (req, res) => {
+
+  const userId = req.params.userId;
+
+  console.log(req.file);
 
   User.findOneAndUpdate({ _id: userId },
     {
       $set: {
         "firstName": req.body.firstName,
         "lastName": req.body.lastName,
-        "bio": req.body.bio
+        "bio": req.body.bio,
+        "image": fs.readFileSync(req.file.path)
       }
     },
     { returnNewDocument: true })
@@ -80,7 +97,6 @@ router.put('/:userId', verify, (req, res) => {
     .catch(e => {
       res.status(400).json(e);
     });
-
 });
 
 // @route POST api/users/login
