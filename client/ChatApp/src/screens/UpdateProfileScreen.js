@@ -7,13 +7,12 @@ import { updateUserProfile, getUserAvatar } from '../utils/auth';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 
-const UpdateProfileScreen = () => {
+const UpdateProfileScreen = ({navigation}) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
-  const [profile, setProfile] = useState('');
-  const { state } = useContext(UserInfoContext);
+  const { state, initUserInfo } = useContext(UserInfoContext);
 
   const submitUpdateProfile = () => {
 
@@ -24,12 +23,14 @@ const UpdateProfileScreen = () => {
       photo: avatar
     };
 
-    updateUserProfile(state.userId, userDetails, state.authToken, displayUserProfile);
+    updateUserProfile(state.userId, userDetails, state.authToken, storeUserDetails);
   };
 
-  const displayUserProfile = async () => {
-    const base64 = await getUserAvatar(state.userId, state.authToken, setProfile);
-    console.log("Base 64 returned: ", base64);
+  const storeUserDetails = (userDetails) => {
+    console.log("User details: ", userDetails);
+    console.log("State previous: ", state);
+    initUserInfo({authToken: state.authToken, ...userDetails});
+    navigation.navigate('Home');
   }
 
   const selectProfilePicture = () => {
@@ -47,7 +48,6 @@ const UpdateProfileScreen = () => {
           0,
           "/storage/emulated/0/Pictures/")
           .then((response) => {
-            console.log('Resize response: ', response);
             setAvatar(response);
           }).catch((err) => {
             console.log(err);
@@ -84,10 +84,6 @@ const UpdateProfileScreen = () => {
       <FormButton
         text="Submit"
         submitForm={submitUpdateProfile}
-      />
-      <Image
-        source={{uri: `data:image/jpeg;base64,${profile}`}} 
-        style={{ width: 100, height: 100, borderColor: '#000', borderWidth: 1 }}
       />
     </View>
   )

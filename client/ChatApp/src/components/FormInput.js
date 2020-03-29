@@ -18,11 +18,12 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: '#F7F9FA',
     borderRadius: 10,
-    height: 60,
-    padding: 8,
+    height: 50,
+    padding: 4,
     justifyContent: 'center',
     alignSelf: 'stretch',
-    marginBottom: 20,
+    flex: 1,
+    maxHeight: 50,
   },
   formText: {
     fontWeight: '500',

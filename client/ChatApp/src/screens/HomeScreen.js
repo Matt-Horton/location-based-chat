@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, StyleSheet, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DiscoverScreen from '../screens/DiscoverScreen';
 import ChatScreen from '../screens/ChatScreen';
@@ -7,12 +7,20 @@ import MapView from 'react-native-maps';
 import CreateChat from './CreateChat';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
+import { Context as UserInfoContext } from '../context/UserInfoContext';
+import { arrayBufferToBase64 } from '../utils/imageUtils';
+
 const ChatStack = createStackNavigator();
 
 const HomeScreen = ({ navigation }) => {
+  const {state} = useContext(UserInfoContext);
+  const [profile, setProfile] = useState('');
 
   useEffect(() => {
-    requestLocationPermission();
+    console.log('Home screen state: ', state);
+    const base64Image = arrayBufferToBase64(state.image.data);
+    setProfile(base64Image);
+    //requestLocationPermission();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -39,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
         );
       } else {
-        console.log("location permission denied")
+        console.log("Location permission denied")
         alert("Location permission denied");
       }
     } catch (err) {
@@ -49,15 +57,21 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.mainContainer} >
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
-        }}
-      />
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+          }}
+        />
+        <Image 
+          source={{uri: `data:image/jpeg;base64,${profile}`}}
+          style={styles.profileImage}
+        />
+      </View>
       <View style={styles.chatWindow}>
         <ChatStack.Navigator initialRouteName="Discover">
           <ChatStack.Screen
@@ -94,14 +108,35 @@ const styles = StyleSheet.create({
   },
   chatWindow: {
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     flexGrow: 3,
     marginTop: -15,
-    padding: 20,
+    paddingTop: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 15
   },
-  map: {
+  mapContainer: {
     flexGrow: 2,
   },
+  map: {
+    flex: 1,
+    alignItems: 'stretch',
+  },
+  profileImage: {
+    position: 'absolute',
+    marginTop: 20,
+    right: 10,
+    top: 10,
+    backgroundColor: '#000',
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    borderColor: '#f57474',
+    borderWidth: 3,
+    marginRight: 30,
+  }
 });
 
 export default HomeScreen;

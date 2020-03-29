@@ -1,19 +1,19 @@
-import React, {useState, useContext, useEffect} from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import React, { useState, useContext, useEffect } from 'react'
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import FormInput from '../components/FormInput'
 import FormButton from '../components/FormButton'
-import {loginUser} from '../utils/auth';
-import {Context as UserInfoContext} from '../context/UserInfoContext';
+import { loginUser } from '../utils/auth';
+import { Context as UserInfoContext } from '../context/UserInfoContext';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   USER_INFO_KEY
 } from '../constants/persistance';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {state} = useContext(UserInfoContext)
-  const {initUserInfo, addAllUserInfo} = useContext(UserInfoContext);
+  const { state } = useContext(UserInfoContext)
+  const { initUserInfo } = useContext(UserInfoContext);
 
   useEffect(() => {
     // Using an IIFE
@@ -22,7 +22,7 @@ const LoginScreen = ({navigation}) => {
         console.log('Fetching User Info from DB...');
         const userInfo = await AsyncStorage.getItem(USER_INFO_KEY);
         console.log('User Info: ', JSON.parse(userInfo));
-        if (userInfo !== null) {
+        if (userInfo._id) {
           // Set context to projects
           initUserInfo(JSON.parse(userInfo));
           navigation.navigate('Home');
@@ -55,24 +55,27 @@ const LoginScreen = ({navigation}) => {
     <View style={styles.container}>
       <Text style={styles.formTitle}>Sign In</Text>
       <Text style={styles.formDescription}>Please enter your email and password to sign in</Text>
-      <FormInput 
+      <FormInput
         placeholder="Email address"
         updateValue={setEmail}
         value={email}
       />
-      <FormInput 
-        placeholder="Password" 
+      <FormInput
+        placeholder="Password"
         updateValue={setPassword}
         value={password}
       />
       <FormButton submitForm={submitForm} text="Sign In" />
-      <Text>Don't have an account? 
-        <Text 
-          style={styles.textLink}
-          onPress={() => console.log('Go to sign Up')}
-        >
-          Sign Up
+      <Text>Don't have an account?
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate('Register')}>
+          <Text
+            style={styles.textLink}
+            onPress={() => console.log('Go to sign Up')}
+          >
+            Sign Up
         </Text>
+        </TouchableWithoutFeedback>
       </Text>
     </View>
   )

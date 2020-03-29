@@ -9,8 +9,7 @@ const loginUser = (userData, initUserInfo, navigateToHome) => {
       console.log(decoded);
       // Add the Auth-Token to the AsyncStorage
       initUserInfo({
-        authToken: res.headers['auth-token'],
-        userId: decoded.id
+        authToken: res.headers['auth-token'], ...res.data
       });
       navigateToHome();
     })
@@ -36,7 +35,7 @@ const registerUser = (userDetails, initUserInfo, navigateToUpdateProfile) => {
     });
 };
 
-const updateUserProfile = (userId, userDetails, authToken, displayUserAvatar) => {
+const updateUserProfile = (userId, userDetails, authToken, storeUserDetails) => {
 
   let data = new FormData();
   data.append('firstName', userDetails.firstName);
@@ -52,38 +51,15 @@ const updateUserProfile = (userId, userDetails, authToken, displayUserAvatar) =>
   axios.put(`http://10.0.2.2:8091/api/users/${userId}`,
     data)
     .then(res => {
-      displayUserAvatar();
+      storeUserDetails(res.data);
     })
     .catch(e => {
       console.log(e);
     });
 }
-
-const getUserAvatar = (userId, authToken, setProfile) => {
-  const headers = {
-    'auth-token': authToken
-  }
-
-  axios.get(`http://10.0.2.2:8091/api/users/profile/${userId}`, { headers: headers })
-    .then(res => {
-      setProfile(arrayBufferToBase64(res.data.data));
-    })
-    .catch(e => {
-      console.log(e);
-    });
-}
-
-const arrayBufferToBase64 = (buffer) => {
-  var binary = '';
-  var bytes = [].slice.call(new Uint8Array(buffer));
-  bytes.forEach((b) => binary += String.fromCharCode(b));
-  console.log(window.btoa(binary))
-  return window.btoa(binary);
-};
 
 export {
   loginUser,
   registerUser,
   updateUserProfile,
-  getUserAvatar,
 };

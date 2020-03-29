@@ -90,7 +90,7 @@ router.put('/:userId', upload.single('avatar'), (req, res) => {
         "image": fs.readFileSync(req.file.path)
       }
     },
-    { returnNewDocument: true })
+    { new: true })
     .then(user => {
       res.status(200).json(user);
     })
@@ -134,7 +134,7 @@ router.post('/login', (req, res) => {
             expiresIn: 31556926
           },
           (err, token) => {
-            res.header('auth-token', token).send(token);
+            res.header('auth-token', token).send(user);
           }
         );
       } else {

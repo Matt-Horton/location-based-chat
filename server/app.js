@@ -11,6 +11,7 @@ const chats = require('./routes/chats');
 
 const Chat = require('./models/Chat');
 const Message = require('./models/Message');
+const User = require('./models/User');
 
 const verify = require('./routes/verifyToken');
 
@@ -34,7 +35,7 @@ app.get('/posts', verify, (req, res) => {
 mongoose.connect(
   process.env.DB_CONNECTION,
   { useNewUrlParser: true },
-  () => console.log('Connected to DB') 
+  () => console.log('Connected to DB')
 );
 
 // Passport Middleware
@@ -54,7 +55,30 @@ const server = http.createServer(app);
 
 const io = socketIo(server);
 io.on('connection', socket => {
-  console.log('client connected on websocket');
+  let userId = socket.handshake.query.userId;
+  let chatId = socket.handshake.query.chatId;
+
+
+  User.findById(userId, (err, user) => {
+    Chat.findById(chatId, (err, chat) => {
+      const userExistsInChat = chat.users
+        .filter(u => u.email == user.email);
+
+      console.log(userExistsInChat);
+      if (userExistsInChat.length === 0) {
+        Chat.findOneAndUpdate(
+          { _id: chatId },
+          { $push: { users: user } },
+          function (error, success) {
+            if (error) {
+              res.status(400).json(error);
+            } else {
+              //console.log('Saved user', success);
+            }
+          });
+      }
+    })
+  });
 
   socket.on("chat message", msg => {
     console.log(msg);

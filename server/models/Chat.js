@@ -9,6 +9,10 @@ const ChatSchema = new mongoose.Schema({
     type: [Object],
     default: []
   },
+  users: {
+    type: [Object],
+    default: []
+  },
   location: {
     type: {
       type: String, // Don't do `{ location: { type: String } }`

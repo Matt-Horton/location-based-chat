@@ -1,15 +1,15 @@
-import React, {useState, useContext} from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import React, { useState, useContext } from 'react'
+import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { registerUser } from '../utils/auth';
-import {Context as UserInfoContext} from '../context/UserInfoContext';
+import { Context as UserInfoContext } from '../context/UserInfoContext';
 
-const RegisterScreen = ({navigation}) => {
+const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-  const {initUserInfo} = useContext(UserInfoContext);
+  const { initUserInfo } = useContext(UserInfoContext);
 
   const submitForm = () => {
     const userDetails = {
@@ -29,29 +29,32 @@ const RegisterScreen = ({navigation}) => {
     <View style={styles.container}>
       <Text style={styles.formTitle}>Sign Up</Text>
       <Text style={styles.formDescription}>Create an account to get started</Text>
-      <FormInput 
+      <FormInput
         placeholder="Email address"
         updateValue={setEmail}
         value={email}
       />
-      <FormInput 
-        placeholder="Password" 
+      <FormInput
+        placeholder="Password"
         updateValue={setPassword}
         value={password}
       />
-      <FormInput 
+      <FormInput
         placeholder="Confirm password"
         updateValue={setPassword2}
         value={password2}
       />
       <FormButton submitForm={submitForm} text="Continue" />
-      <Text>Already have an account? 
-        <Text 
-          style={styles.textLink}
-          onPress={() => console.log('Go to sign in')}
-        >
-          Sign In
+      <Text>Already have an account?
+      <TouchableWithoutFeedback
+          onPress={() => navigation.navigate('Login')}>
+          <Text
+            style={styles.textLink}
+            onPress={() => console.log('Go to sign Up')}
+          >
+            Sign In
         </Text>
+        </TouchableWithoutFeedback>
       </Text>
     </View>
   )
