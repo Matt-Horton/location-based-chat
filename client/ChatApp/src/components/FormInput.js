@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput } from 'react-native'
 
 const FormInput = props => {
   return (
-    <View style={styles.formContainer}>
+    <View style={[styles.formContainer, props.style]}>
       <TextInput
         style={styles.formText}
         value={props.value}

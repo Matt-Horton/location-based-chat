@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   messageContainer: {
     borderRadius: 10,
     padding: 10,
-    backgroundColor: '#f57474',
+    backgroundColor: '#db4f4f',
     alignSelf: 'flex-end',
     marginBottom: 10,
   },

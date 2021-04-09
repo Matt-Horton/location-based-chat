@@ -30,32 +30,36 @@ const RegisterScreen = ({ navigation }) => {
       <Text style={styles.formTitle}>Sign Up</Text>
       <Text style={styles.formDescription}>Create an account to get started</Text>
       <FormInput
+        style={styles.formInput}
         placeholder="Email address"
         updateValue={setEmail}
         value={email}
       />
       <FormInput
+        style={styles.formInput}
         placeholder="Password"
         updateValue={setPassword}
         value={password}
       />
       <FormInput
+        style={styles.formInput}
         placeholder="Confirm password"
         updateValue={setPassword2}
         value={password2}
       />
       <FormButton submitForm={submitForm} text="Continue" />
-      <Text>Already have an account?
-      <TouchableWithoutFeedback
+      <View style={styles.bottomText}>
+        <Text style={styles.infoText}>Already have an account?</Text>
+        <TouchableWithoutFeedback
           onPress={() => navigation.navigate('Login')}>
           <Text
             style={styles.textLink}
             onPress={() => console.log('Go to sign Up')}
           >
             Sign In
-        </Text>
+          </Text>
         </TouchableWithoutFeedback>
-      </Text>
+      </View>
     </View>
   )
 }
@@ -80,8 +84,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 12,
   },
+  formInput: {
+    marginBottom: 30,
+  },
+  bottomText: {
+    flexDirection: 'row',
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoText: {
+    color: '#777',
+    fontWeight: '700',
+  },
   textLink: {
     color: '#f57474',
+    fontWeight: '700',
+    marginLeft: 5,
   },
 });
 

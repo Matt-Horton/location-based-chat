@@ -56,17 +56,20 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.formTitle}>Sign In</Text>
       <Text style={styles.formDescription}>Please enter your email and password to sign in</Text>
       <FormInput
+        style={styles.formInput}
         placeholder="Email address"
         updateValue={setEmail}
         value={email}
       />
       <FormInput
+        style={styles.formInput}
         placeholder="Password"
         updateValue={setPassword}
         value={password}
       />
       <FormButton submitForm={submitForm} text="Sign In" />
-      <Text>Don't have an account?
+      <View style={styles.bottomText}>
+        <Text style={styles.infoText}>Don't have an account?</Text>
         <TouchableWithoutFeedback
           onPress={() => navigation.navigate('Register')}>
           <Text
@@ -74,9 +77,9 @@ const LoginScreen = ({ navigation }) => {
             onPress={() => console.log('Go to sign Up')}
           >
             Sign Up
-        </Text>
+          </Text>
         </TouchableWithoutFeedback>
-      </Text>
+      </View>
     </View>
   )
 }
@@ -101,8 +104,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 12,
   },
+  formInput: {
+    marginBottom: 30,
+  },
+  bottomText: {
+    flexDirection: 'row',
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoText: {
+    color: '#777',
+    fontWeight: '700',
+  },
   textLink: {
     color: '#f57474',
+    fontWeight: '700',
+    marginLeft: 5,
   },
 });
 

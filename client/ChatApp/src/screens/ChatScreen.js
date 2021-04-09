@@ -9,6 +9,7 @@ import { getChat } from '../utils/chatUtils';
 import SendMessageBtn from '../components/SendMessageBtn';
 import MyChatMessage from '../components/MyChatMessage';
 import OtherChatMessage from '../components/OtherChatMessage';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const ChatScreen = ({ route, navigation }) => {
   const [message, setMessage] = useState('');
@@ -70,6 +71,14 @@ const ChatScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.navigationContainer}>
+        <Icon
+          name="md-arrow-round-back"
+          color="#db4f4f"
+          size={25}
+          onPress={() => navigation.goBack()}
+        />
+      </View>
       <FlatList
         data={chat.messages}
         renderItem={({ item }) => renderMessage(item)}
@@ -96,6 +105,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: '#fff',
+  },
+  navigationContainer: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 10
   },
   messageInputContainer: {
     marginTop: 10,

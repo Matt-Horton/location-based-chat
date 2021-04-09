@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import DiscoverScreen from '../screens/DiscoverScreen';
 import ChatScreen from '../screens/ChatScreen';
 import MapView from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 import CreateChat from './CreateChat';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native';
@@ -13,14 +14,15 @@ import { arrayBufferToBase64 } from '../utils/imageUtils';
 const ChatStack = createStackNavigator();
 
 const HomeScreen = ({ navigation }) => {
-  const {state} = useContext(UserInfoContext);
+  const { state } = useContext(UserInfoContext);
   const [profile, setProfile] = useState('');
+  const [currentLocation, setCurrentLocation] = useState({});
 
   useEffect(() => {
     console.log('Home screen state: ', state);
     const base64Image = arrayBufferToBase64(state.image.data);
     setProfile(base64Image);
-    //requestLocationPermission();
+    requestLocationPermission();
   }, []);
 
   const requestLocationPermission = async () => {
@@ -38,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
 
         Geolocation.getCurrentPosition(
           (position) => {
-            console.log(position);
+            console.log("Current Position: ", position);
           },
           (error) => {
             // See error code charts below.
@@ -66,13 +68,21 @@ const HomeScreen = ({ navigation }) => {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421
           }}
-        />
-        <Image 
-          source={{uri: `data:image/jpeg;base64,${profile}`}}
+        >
+          <Marker
+            coordinate={{latitude: 37.78825, longitude: -122.4324}}
+            image={require('../images/mapMarker.png')}
+          />
+        </MapView>
+        <Image
+          source={{ uri: `data:image/jpeg;base64,${profile}` }}
           style={styles.profileImage}
         />
       </View>
       <View style={styles.chatWindow}>
+        <View style={styles.draggableContainer}>
+          <View style={styles.draggableBar}/>
+        </View>
         <ChatStack.Navigator initialRouteName="Discover">
           <ChatStack.Screen
             name="Discover"
@@ -117,6 +127,16 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     paddingBottom: 15
   },
+  draggableContainer: {
+    alignItems: 'center',
+    height: 10,
+  },
+  draggableBar: {
+    backgroundColor: '#d4d4d4',
+    height: 5,
+    width: 30,
+    borderRadius: 40,
+  },
   mapContainer: {
     flexGrow: 2,
   },
@@ -127,15 +147,15 @@ const styles = StyleSheet.create({
   profileImage: {
     position: 'absolute',
     marginTop: 20,
-    right: 10,
+    right: 0,
     top: 10,
     backgroundColor: '#000',
     width: 50,
     height: 50,
     borderRadius: 10,
-    borderColor: '#f57474',
+    borderColor: '#db4f4f',
     borderWidth: 3,
-    marginRight: 30,
+    marginRight: 20,
   }
 });
 
